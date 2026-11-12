@@ -1,6 +1,16 @@
 from drafter import *
 from dataclasses import dataclass
 
+set_website_title("SwimSet")
+set_site_information(
+    author="Natalie Campbell",
+    description="Create a swim set for a workout.",
+    sources="Thanks to the Drafter docs and ChatGPT.",
+    planning="CS1_Doc_1.pdf",
+    links=["file:///C:/Users/ngc19/Downloads/CS1%20Final%20Project%201_%20Design.pdf"]
+)
+hide_debug_information()
+set_website_framed(False)
 
 # --------------------------------------------------
 # DATACLASSES
