@@ -12,9 +12,60 @@ set_site_information(
 hide_debug_information()
 set_website_framed(False)
 
+
 # --------------------------------------------------
-# DATACLASSES
+# CUSTOM STYLING
 # --------------------------------------------------
+
+def page_title(text: str):
+    """Creates a large navy heading for each page."""
+    heading = Header(text)
+    change_color(heading, "#12304A")
+    change_text_size(heading, "32px")
+    change_padding(heading, "12px")
+    change_margin(heading, "8px")
+    return heading
+
+
+def section_title(text: str):
+    """Creates an ocean-blue heading for page sections."""
+    heading = Header(text, 2)
+    change_color(heading, "#168AAD")
+    change_text_size(heading, "24px")
+    change_padding(heading, "8px")
+    return heading
+
+
+def card_title(text: str):
+    """Creates a smaller blue heading for individual workout listings."""
+    heading = Header(text, 3)
+    change_color(heading, "#168AAD")
+    change_text_size(heading, "19px")
+    change_padding(heading, "5px")
+    return heading
+
+
+def style_button(button):
+    """Applies the same aquatic style to a navigation button."""
+    change_background_color(button, "#168AAD")
+    change_color(button, "#FFFFFF")
+    change_padding(button, "11px")
+    change_margin(button, "7px")
+    return button
+
+
+def swim_button(text: str, destination: str):
+    """Creates a consistently styled navigation button."""
+    return style_button(Button(text, destination))
+
+
+def intro_text(text: str):
+    """Styles short introductory text beneath a page heading."""
+    styled_text = change_color(text, "#496575")
+    styled_text = change_text_size(styled_text, "17px")
+    styled_text = change_padding(styled_text, "5px")
+    return styled_text
+
 
 @dataclass
 class SwimSet:
@@ -370,26 +421,26 @@ def index(state: State) -> Page:
     """
 
     return Page(state, [
-        Header("SWIMSET"),
-        "Your next swim workout starts here.",
+        page_title("SWIMSET"),
+        intro_text("Your next swim workout starts here."),
         HorizontalRule(),
 
-        Header("Welcome to SwimSet!", 2),
+        section_title("Welcome to SwimSet!"),
 
-        "Stop spending time planning your workouts.",
+        intro_text("Stop spending time planning your workouts."),
 
         "Choose your skill level, training focus, and "
         "distance goal to find a workout.",
 
         "\n",
 
-        Button("Generate a Workout", "workout_generator"),
+        swim_button("Generate a Workout", "workout_generator"),
 
-        Button("Explore Workout Library", "workout_library"),
+        swim_button("Explore Workout Library", "workout_library"),
 
-        Button("My Favorite Workouts", "favorites"),
+        swim_button("My Favorite Workouts", "favorites"),
 
-        Button("About SwimSet", "about")
+        swim_button("About SwimSet", "about")
     ])
 
 
@@ -405,13 +456,13 @@ def workout_generator(state: State) -> Page:
     """
 
     return Page(state, [
-        Header("Workout Generator"),
+        page_title("WORKOUT GENERATOR"),
 
-        "Customize your next swimming workout!",
+        intro_text("Customize your next swimming workout!"),
 
         HorizontalRule(),
 
-        Header("1. Choose Your Skill Level", 3),
+        section_title("1. Choose Your Skill Level"),
 
         SelectBox(
             "skill_level",
@@ -419,7 +470,7 @@ def workout_generator(state: State) -> Page:
             state.skill_level
         ),
 
-        Header("2. Choose Your Workout Focus", 3),
+        section_title("2. Choose Your Workout Focus"),
 
         SelectBox(
             "workout_focus",
@@ -433,7 +484,7 @@ def workout_generator(state: State) -> Page:
             state.workout_focus
         ),
 
-        Header("3. Enter Your Distance Goal", 3),
+        section_title("3. Enter Your Distance Goal"),
 
         "Enter your desired distance in yards:",
 
@@ -441,9 +492,9 @@ def workout_generator(state: State) -> Page:
 
         "\n",
 
-        Button("Generate My Workout", "generate_workout"),
+        swim_button("Generate My Workout", "generate_workout"),
 
-        Button("Back Home", "index")
+        swim_button("Back Home", "index")
     ])
 
 
@@ -474,9 +525,9 @@ def generate_workout(
     # Validate the distance.
     if distance_goal <= 0:
         return Page(state, [
-            Header("Invalid Distance"),
+            page_title("INVALID DISTANCE"),
             "Please enter a distance greater than zero.",
-            Button("Try Again", "workout_generator")
+            swim_button("Try Again", "workout_generator")
         ])
 
     # Generate the workout.
@@ -485,9 +536,9 @@ def generate_workout(
     # Check whether a matching workout exists.
     if state.current_workout is None:
         return Page(state, [
-            Header("No Workout Found"),
+            page_title("NO WORKOUT FOUND"),
             "We couldn't find a matching workout.",
-            Button("Try Again", "workout_generator")
+            swim_button("Try Again", "workout_generator")
         ])
 
     return view_workout(state)
@@ -508,17 +559,17 @@ def view_workout(state: State) -> Page:
 
     if state.current_workout is None:
         return Page(state, [
-            Header("No Workout Yet"),
+            page_title("NO WORKOUT YET"),
             "Generate a workout to see it here.",
-            Button("Workout Generator", "workout_generator")
+            swim_button("Workout Generator", "workout_generator")
         ])
 
     workout = state.current_workout
 
     return Page(state, [
-        Header("Your Generated Workout"),
+        page_title("YOUR GENERATED WORKOUT"),
 
-        Header(workout.name, 2),
+        section_title(workout.name),
 
         "Skill Level: " + workout.skill_level,
 
@@ -532,25 +583,25 @@ def view_workout(state: State) -> Page:
 
         HorizontalRule(),
 
-        Header("Warmup", 2),
+        section_title("Warmup"),
 
         BulletedList(workout.warmup),
 
-        Header("Main Set", 2),
+        section_title("Main Set"),
 
         BulletedList(workout.main_set),
 
-        Header("Cooldown", 2),
+        section_title("Cooldown"),
 
         BulletedList(workout.cooldown),
 
         HorizontalRule(),
 
-        Button("Save to Favorites", "save_favorite"),
+        swim_button("Save to Favorites", "save_favorite"),
 
-        Button("Generate Another Workout", "workout_generator"),
+        swim_button("Generate Another Workout", "workout_generator"),
 
-        Button("Back Home", "index")
+        swim_button("Back Home", "index")
     ])
 
 
@@ -569,9 +620,9 @@ def workout_library(state: State) -> Page:
     """
 
     content = [
-        Header("Workout Library"),
+        page_title("WORKOUT LIBRARY"),
 
-        "Explore the different workouts available.",
+        intro_text("Explore the different workouts available."),
 
         HorizontalRule()
     ]
@@ -579,7 +630,7 @@ def workout_library(state: State) -> Page:
     # Loop through every workout in the library.
     for workout in state.workout_library:
 
-        content.append(Header(workout.name, 3))
+        content.append(card_title(workout.name))
 
         content.append(
             "Skill Level: " + workout.skill_level
@@ -595,19 +646,19 @@ def workout_library(state: State) -> Page:
         )
 
         content.append(
-            Button(
+            style_button(Button(
                 "View Workout",
                 "view_library_set",
                 [Argument(
                     "set_index",
                     state.workout_library.index(workout)
                 )]
-            )
+            ))
         )
 
         content.append(HorizontalRule())
 
-    content.append(Button("Back Home", "index"))
+    content.append(swim_button("Back Home", "index"))
 
     return Page(state, content)
 
@@ -631,14 +682,14 @@ def view_library_set(
 
     if set_index < 0 or set_index >= len(state.workout_library):
         return Page(state, [
-            Header("Workout Not Found"),
-            Button("Return to Library", "workout_library")
+            page_title("WORKOUT NOT FOUND"),
+            swim_button("Return to Library", "workout_library")
         ])
 
     workout = state.workout_library[set_index]
 
     return Page(state, [
-        Header(workout.name),
+        page_title(workout.name),
 
         "Skill Level: " + workout.skill_level,
 
@@ -649,21 +700,21 @@ def view_library_set(
 
         HorizontalRule(),
 
-        Header("Warmup", 2),
+        section_title("Warmup"),
 
         BulletedList(workout.warmup),
 
-        Header("Main Set", 2),
+        section_title("Main Set"),
 
         BulletedList(workout.main_set),
 
-        Header("Cooldown", 2),
+        section_title("Cooldown"),
 
         BulletedList(workout.cooldown),
 
-        Button("Return to Library", "workout_library"),
+        swim_button("Return to Library", "workout_library"),
 
-        Button("Back Home", "index")
+        swim_button("Back Home", "index")
     ])
 
 
@@ -681,9 +732,9 @@ def favorites(state: State) -> Page:
     """
 
     content = [
-        Header("My Favorite Workouts"),
+        page_title("MY FAVORITE WORKOUTS"),
 
-        "Your saved swimming workouts.",
+        intro_text("Your saved swimming workouts."),
 
         HorizontalRule()
     ]
@@ -698,7 +749,7 @@ def favorites(state: State) -> Page:
         # Loop through saved workout instances.
         for workout in state.favorite_workouts:
 
-            content.append(Header(workout.name, 3))
+            content.append(card_title(workout.name))
 
             content.append(
                 "Focus: " + workout.workout_focus
@@ -715,7 +766,7 @@ def favorites(state: State) -> Page:
 
             content.append(HorizontalRule())
 
-    content.append(Button("Back Home", "index"))
+    content.append(swim_button("Back Home", "index"))
 
     return Page(state, content)
 
@@ -735,8 +786,8 @@ def save_favorite(state: State) -> Page:
 
     if state.current_workout is None:
         return Page(state, [
-            Header("No Workout to Save"),
-            Button("Generate Workout", "workout_generator")
+            page_title("NO WORKOUT TO SAVE"),
+            swim_button("Generate Workout", "workout_generator")
         ])
 
     already_saved = False
@@ -752,15 +803,15 @@ def save_favorite(state: State) -> Page:
         )
 
     return Page(state, [
-        Header("Favorites Updated"),
+        page_title("FAVORITES UPDATED"),
 
         "Your workout has been saved!",
 
-        Button("View Favorites", "favorites"),
+        swim_button("View Favorites", "favorites"),
 
-        Button("Back to Workout", "view_workout"),
+        swim_button("Back to Workout", "view_workout"),
 
-        Button("Back Home", "index")
+        swim_button("Back Home", "index")
     ])
 
 
@@ -776,14 +827,14 @@ def about(state: State) -> Page:
     """
 
     return Page(state, [
-        Header("About SwimSet"),
+        page_title("ABOUT SWIMSET"),
 
         "SwimSet was created to make planning swimming "
         "workouts easier.",
 
         HorizontalRule(),
 
-        Header("How It Works", 2),
+        section_title("How It Works"),
 
         "1. Select your swimming skill level.",
 
@@ -800,7 +851,7 @@ def about(state: State) -> Page:
         "The goal is to help swimmers spend less time "
         "planning workouts and more time swimming!",
 
-        Button("Back Home", "index")
+        swim_button("Back Home", "index")
     ])
 
 
@@ -860,6 +911,7 @@ test_save_favorite()
 # --------------------------------------------------
 # START WEBSITE
 # --------------------------------------------------
+set_website_style("sakura")
 
 start_server(
     State(
@@ -872,3 +924,5 @@ start_server(
     ),
     site_title="SwimSet"
 )
+
+
